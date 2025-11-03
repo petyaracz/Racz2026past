@@ -221,4 +221,4 @@ p5 = plot_model(tidy_fit, 'pred', terms = c('preverb_particle')) + ggtitle('') +
 p6 = plot_model(tidy_fit, 'pred', terms = c('verb_definiteness')) + ggtitle('') + theme_bw() + ylab('p(Ipf)')
 
 p0 / (p1 + p2 + p3) / (p4 + p5 + p6)
-ggsave('viz/best_model_mond.png', width = 12, height = 4, dpi = 'print')
+ggsave('viz/best_model_mond.png', width = 6, height = 6, dpi = 'print')
