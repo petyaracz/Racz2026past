@@ -15,8 +15,6 @@ library(glue)
 b = read_tsv('~/Github/Racz2025Bible/dat/gospels.gz')
 # omagyar dictionary
 o = read_tsv('dat/omagyar_dictionary.tsv.gz')
-# webcorpus 
-v = read_tsv('~/Github/Racz2024/resource/webcorpus2freqlist/verb_forms.tsv.gz')
 
 # -- unnest -- #
 
@@ -94,6 +92,16 @@ d3[is.na(d3$person),]
 d3[is.na(d3$number),]
 d3[is.na(d3$def),]
 
+d3 |> 
+  distinct(lemma,word,class,lemma_freq,freq) |> 
+  group_by(lemma,class) |> 
+  arrange(-freq) |> 
+  mutate(words = paste(word, collapse = ', ')) |> 
+  arrange(lemma) |> 
+  distinct(lemma,class,words) |> 
+  pivot_wider(names_from = class, values_from = words) |> 
+  googlesheets4::write_sheet('https://docs.google.com/spreadsheets/d/1aHORd9t4nkJeZ5pSVX6gri14Hr5ObCQMK75OyKVBUoc/edit?usp=sharing', 'checks')
+  
 # -- write -- #
 
 write_tsv(
