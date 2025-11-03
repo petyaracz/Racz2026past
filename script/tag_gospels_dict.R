@@ -81,9 +81,9 @@ d3 = d2 |>
     !lemma %in% c('el','alá','elevemegy','ki','meg','elő','fel','alá','be','le','által','ide','rá','össze','bele','oda','kibik','haza','hátra','vissza','')
          )
 
-# vala
-d3[d3$word == 'vala',]$person = 3
-d3[d3$word == 'vala',]$number = 'S'
+# vala is an aux
+d3 = d3 |> 
+  filter(lemma != 'van', lemma != 'lesz')
 
 # -- more checks -- #
 
@@ -92,19 +92,18 @@ d3[is.na(d3$person),]
 d3[is.na(d3$number),]
 d3[is.na(d3$def),]
 
-d3 |> 
-  distinct(lemma,word,class,lemma_freq,freq) |> 
-  group_by(lemma,class) |> 
-  arrange(-freq) |> 
-  mutate(words = paste(word, collapse = ', ')) |> 
-  arrange(lemma) |> 
-  distinct(lemma,class,words) |> 
-  pivot_wider(names_from = class, values_from = words) |> 
-  googlesheets4::write_sheet('https://docs.google.com/spreadsheets/d/1aHORd9t4nkJeZ5pSVX6gri14Hr5ObCQMK75OyKVBUoc/edit?usp=sharing', 'checks')
+# d3 |> 
+#   distinct(lemma,word,class,lemma_freq,freq) |> 
+#   group_by(lemma,class) |> 
+#   arrange(-freq) |> 
+#   mutate(words = paste(word, collapse = ', ')) |> 
+#   arrange(lemma) |> 
+#   distinct(lemma,class,words) |> 
+#   pivot_wider(names_from = class, values_from = words) |> 
+#   googlesheets4::write_sheet('https://docs.google.com/spreadsheets/d/1aHORd9t4nkJeZ5pSVX6gri14Hr5ObCQMK75OyKVBUoc/edit?usp=sharing', 'checks')
   
 # -- write -- #
 
 write_tsv(
   d3, 'dat/gospel_and_dict.tsv.gz'
 )
-
