@@ -65,32 +65,23 @@ lemma_freq = d2 |>
   count(lemma, name = 'lemma_freq') |> 
   mutate(log_lemma_freq = log10(lemma_freq))
 
-preverb = d2 |> 
-  distinct(lemma) |> 
-  mutate(
-    preverb = str_detect(lemma, '^(meg|be|ki|le|fel|el|rá|ide|oda|egybe|által|hozzá|vissza|neki|haza|ketté|alá|elő|hátra|össze)'),
-    preverb = ifelse(lemma %in% c('lel','lesz','megy','felel','beszél','rázódik','becsül','aláz','ráz','elégít','rág','ellent'), F, preverb)
-  )
 
 d3 = d2 |> 
   left_join(word_freq) |> 
   left_join(lemma_freq) |> 
-  left_join(preverb) |> 
   filter(
-    !is.na(class),
-    !lemma %in% c('el','alá','elevemegy','ki','meg','elő','fel','alá','be','le','által','ide','rá','össze','bele','oda','kibik','haza','hátra','vissza','')
-         )
-
-# vala is an aux
-d3 = d3 |> 
-  filter(lemma != 'van', lemma != 'lesz')
+    !is.na(class)
+    )
 
 # -- more checks -- #
 
 d3[is.na(d3$lemma),]
 d3[is.na(d3$person),]
 d3[is.na(d3$number),]
-d3[is.na(d3$def),]
+unique(d3[!d3$prefix,]$lemma)
+unique(d3[d3$motion_verb,]$lemma)
+unique(d3[d3$modal_verb,]$lemma)
+unique(d3[d3$communication_verb,]$lemma)
 
 # d3 |> 
 #   distinct(lemma,word,class,lemma_freq,freq) |> 

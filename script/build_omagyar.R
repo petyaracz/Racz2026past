@@ -170,11 +170,6 @@ d = d |>
       NA,
       str_extract(tag, '[SP](?=[123])')
     ),
-    def = ifelse(
-      !str_detect(tag, 'V'),
-      NA,
-      str_detect(tag, 'Def')
-    ),
     preterite = ifelse(
       is.na(tag),
       NA,
@@ -189,13 +184,18 @@ d = d |>
       is.na(tag),
       NA,
       number
-    )
-  )
+    ),
+    prefix = str_detect(tag,'VPfx'),
+    motion_verb = str_detect(lemma, '(jön|megy|indul)'),
+    modal_verb = str_detect(lemma, '(^akar|tud|kell$)'),
+    communication_verb = str_detect(lemma, '(mond|szól|beszél|kér|parancsol|kérdez)')
+  ) |> 
+  filter(!lemma %in% c('van','lesz','el','alá','elevemegy','ki','meg','elő','fel','alá','be','le','által','ide','rá','össze','bele','oda','kibik','haza','hátra','vissza','')) # vala and volt are auxes
 
 # -- dict -- #
 
 dict = d |> 
-  count(norm,lemma,class,tag,number,person,def, name = 'omagyar_freq')
+  count(norm,lemma,class,tag,number,person,prefix,modal_verb,motion_verb,communication_verb, name = 'omagyar_freq')
 
 # -- write -- #
 
