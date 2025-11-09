@@ -125,7 +125,6 @@ summary(fit2)
 
 # -- load -- #
 
-
 loo0 = readRDS('models/loo0.rds')
 loo1 = readRDS('models/loo1.rds')
 loo2 = readRDS('models/loo2.rds')

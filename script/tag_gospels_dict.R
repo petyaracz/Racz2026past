@@ -65,12 +65,20 @@ lemma_freq = d2 |>
   count(lemma, name = 'lemma_freq') |> 
   mutate(log_lemma_freq = log10(lemma_freq))
 
+# -- volt, vala -- #
 
 d3 = d2 |> 
+  mutate(
+    next_word = lead(word),
+    class_subtype = ifelse(
+      next_word %in% c('volt','vala'), 'perf', 'other'
+    )
+         ) |> 
   left_join(word_freq) |> 
   left_join(lemma_freq) |> 
   filter(
-    !is.na(class)
+    !is.na(class),
+    class_subtype == 'other'
     )
 
 # -- more checks -- #
