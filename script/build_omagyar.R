@@ -154,12 +154,8 @@ d = bind_rows(dat1,dat2,dat3,dat4,dat5,dat6) |>
 
 d = d |> 
   mutate(
-    preterite = ifelse(
-      !str_detect(tag, 'V'),
-      NA,
-      str_detect(tag, 'Past|Ipf')
-    ),
-    class = str_extract(tag, 'Past|Ipf'),
+    verb_past_class = str_extract(tag, 'Past|Ipf'),
+    verb_present = str_detect(tag, 'V\\.[SP][123]'),
     person = ifelse(
       !str_detect(tag, 'V'),
       NA,
@@ -169,11 +165,6 @@ d = d |>
       !str_detect(tag, 'V'),
       NA,
       str_extract(tag, '[SP](?=[123])')
-    ),
-    preterite = ifelse(
-      is.na(tag),
-      NA,
-      preterite
     ),
     person = ifelse(
       is.na(tag),
@@ -195,7 +186,7 @@ d = d |>
 # -- dict -- #
 
 dict = d |> 
-  count(norm,lemma,class,tag,number,person,prefix,modal_verb,motion_verb,communication_verb, name = 'omagyar_freq')
+  count(norm,lemma,verb_past_class,verb_present,tag,number,person,prefix,modal_verb,motion_verb,communication_verb, name = 'omagyar_freq')
 
 # -- write -- #
 

@@ -51,7 +51,7 @@ d2 |>
 b |> 
   sample_n(1) |> 
   inner_join(d2) |> 
-  select(class,word,tag,lemma)
+  select(verb_past_class,word,tag,lemma)
 
 # yeah sure whatever
 
@@ -71,25 +71,59 @@ d3 = d2 |>
   mutate(
     next_word = lead(word),
     class_subtype = ifelse(
-      next_word %in% c('volt','vala'), 'perf', 'other'
+      next_word %in% c('volt','vala'), 'complex', 'other'
     )
          ) |> 
   left_join(word_freq) |> 
-  left_join(lemma_freq) |> 
-  filter(
-    !is.na(class),
-    class_subtype == 'other'
+  left_join(lemma_freq)
+
+# -- the four classes -- #
+
+# not a thing: ipf + volt/vala (verb_past_class == Ipf, class_subtype == 'complex')
+# present + volt/vala (verb_past_class == Past, class_subtype == 'complex')
+# past + volt/vala (verb_past_class == Past, class_subtype == 'complex')
+# ipf (verb_past_class == Ipf, class_subtype == 'complex')
+# past (verb_past_class == Past, class_subtype == 'complex')
+
+# d3 |> 
+#   filter(class_subtype == 'complex',!is.na(tag)) |> 
+#   distinct(word,next_word,tag,freq) |> 
+#   arrange(-freq) |> 
+#   group_by(tag) |> 
+#   slice(1) |> 
+#   select(-freq) |> 
+#   googlesheets4::write_sheet('https://docs.google.com/spreadsheets/d/1Wn98bJANCA-Tv5rgKgu-BaTcv7A_eIv6FBAAAHbSizQ/edit?usp=sharing', 'Sheet1')
+
+# d3 |> 
+#   count(class_subtype,verb_past_class,verb_present,tag) |> View()
+
+d4 = d3 |> 
+  mutate(
+    verb_past_class_complex = case_when(
+      !is.na(verb_past_class) & class_subtype == 'complex' ~ 'past_complex',
+      verb_present & class_subtype == 'complex' ~ 'perf_complex',
+      verb_past_class == 'Ipf' & class_subtype == 'other' ~ 'ipf',
+      verb_past_class == 'Past' & class_subtype == 'other' ~ 'past'
     )
+  ) |> 
+  filter(!is.na(verb_past_class_complex))
 
 # -- more checks -- #
 
-d3[is.na(d3$lemma),]
-d3[is.na(d3$person),]
-d3[is.na(d3$number),]
-unique(d3[!d3$prefix,]$lemma)
-unique(d3[d3$motion_verb,]$lemma)
-unique(d3[d3$modal_verb,]$lemma)
-unique(d3[d3$communication_verb,]$lemma)
+d4[is.na(d4$lemma),]
+d4[is.na(d4$person),]
+d4[is.na(d4$number),]
+unique(d4[!d4$prefix,]$lemma)
+unique(d4[d4$motion_verb,]$lemma)
+unique(d4[d4$modal_verb,]$lemma)
+unique(d4[d4$communication_verb,]$lemma)
+unique(d4[d4$verb_past_class_complex == 'past_complex',]$word)
+unique(d4[d4$verb_past_class_complex == 'past',]$word)
+unique(d4[d4$verb_past_class_complex == 'perf_complex',]$word)
+unique(d4[d4$verb_past_class_complex == 'ipf',]$word)
+
+# ohoho
+d4 = d4 |> filter(!word %in% c('érettünk'))
 
 # d3 |> 
 #   distinct(lemma,word,class,lemma_freq,freq) |> 
@@ -104,5 +138,5 @@ unique(d3[d3$communication_verb,]$lemma)
 # -- write -- #
 
 write_tsv(
-  d3, 'dat/gospel_and_dict.tsv.gz'
+  d4, 'dat/gospel_and_dict.tsv.gz'
 )

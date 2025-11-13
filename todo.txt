@@ -1,2 +1,8 @@
-make sure gospels includes modern texts
-do sg with ambiguous words (see suswords)
+cite
+
+EFFECT DISPLAYS FOR
+MULTINOMIAL AND
+PROPORTIONAL-ODDS LOGIT
+MODELS
+John Fox*
+Robert Andersen*
