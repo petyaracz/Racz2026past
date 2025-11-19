@@ -69,8 +69,8 @@ loo2 = loo(fit2)
 
 loo_compare(loo1,loo2)
 # elpd_diff se_diff
-# fit2  0.0       0.0   
-# fit1 -1.1       0.9  
+# fit2  0.0       0.0
+# fit1 -1.9       0.9
 
 fit1b = brm(
   verb_past_class_complex ~ log_lemma_freq_scaled + number +

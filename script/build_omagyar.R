@@ -155,7 +155,7 @@ d = bind_rows(dat1,dat2,dat3,dat4,dat5,dat6) |>
 d = d |> 
   mutate(
     verb_past_class = str_extract(tag, 'Past|Ipf'),
-    verb_present = str_detect(tag, 'V\\.[SP][123]'),
+    verb_present = str_detect(tag, 'V\\.([SP][123]|Cond\\.[SP][123]|Mod\\.[SP][123]|)'),
     person = ifelse(
       !str_detect(tag, 'V'),
       NA,

@@ -87,7 +87,7 @@ unique(d2[d2$verb_past_class_complex == 'perf_complex',]$word)
 unique(d2[d2$verb_past_class_complex == 'ipf',]$word)
 
 # ohoho
-d2 = d2 |> filter(!word %in% c('érettünk'))
+d2 = d2 |> filter(!word %in% c('érettünk'), !is.na(person), !is.na(number))
 
 # -- write -- #
 

@@ -63,14 +63,16 @@ predictors = c(
 'modal_verb'
 )
 
-d |> 
+p1 = d |> 
   mutate(freq_ntile = ntile(log_lemma_freq, 4)) |> 
-  drawComparison(freq_ntile)
-d |> 
+  drawComparison(freq_ntile) + ggtitle('lemma freq (quartiles)')
+p2 = d |> 
   mutate(length_ntile = ntile(lemma_length, 4)) |> 
-  drawComparison(length_ntile)
-drawComparison(d,number)
-drawComparison(d,person)
-drawComparison(d,motion_verb)
-drawComparison(d,communication_verb)
+  drawComparison(length_ntile) + ggtitle('lemma length (quartiles)')
+p3 = drawComparison(d,number) + ggtitle('number')
+p4 = drawComparison(d,person) + ggtitle('person')
+p5 = drawComparison(d,motion_verb) + ggtitle('motion verb')
+p6 = drawComparison(d,communication_verb) + ggtitle('communicative verb')
 
+(p1 + p2) / (p3 + p4) / (p5 + p6) + plot_layout(heights = c(2,1,1), guides = 'collect')
+ggsave('viz/gospel_to_tmk_preds.png', dpi = 'print', width = 9, height = 9)

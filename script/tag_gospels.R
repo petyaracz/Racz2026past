@@ -123,7 +123,7 @@ unique(d4[d4$verb_past_class_complex == 'perf_complex',]$word)
 unique(d4[d4$verb_past_class_complex == 'ipf',]$word)
 
 # ohoho
-d4 = d4 |> filter(!word %in% c('érettünk'))
+d4 = d4 |> filter(!word %in% c('érettünk'), !is.na(person), !is.na(number))
 
 # d3 |> 
 #   distinct(lemma,word,class,lemma_freq,freq) |> 

@@ -98,7 +98,7 @@ ggsave('viz/cors_multi.png', dpi = 'print', width = 10, height = 8)
 
 # -- summary -- #
 
-tidy(fit3, conf.int = T) |> 
+tidy(fit1, conf.int = T) |> 
   write_tsv('dat/best_model_coef_multi.tsv')
 
 # -- pred -- #
@@ -106,17 +106,15 @@ tidy(fit3, conf.int = T) |>
 cont_pred = c("log_lemma_freq_scaled", "lemma_length")
 cat_pred = c("number", "person", "prefix", "motion_verb", "communication_verb", "modal_verb")
 
-plotCont(fit3, 'lemma_length')
-
 set1 = map(cont_pred,
-            ~ plotCont(fit3, .)
+            ~ plotCont(fit1, .)
           )
 
 set2 = map(cat_pred,
-           ~ plotCat(fit3, .)
+           ~ plotCat(fit1, .)
           )
 
-set3 = plotCat(fit3, "translation") +
+set3 = plotCat(fit1, "translation") +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 
 wrap_plots(c(set1,set3,set2), ncol = 3) + plot_layout(guides = 'collect')
