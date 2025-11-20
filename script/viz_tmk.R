@@ -52,6 +52,17 @@ drawComparison = function(dat,varname){
 
 d = read_tsv('dat/tmk_and_dict_and_pred.tsv.gz')
 
+# -- viz -- #
+
+d |> 
+  count(verb_past_class_complex,year) |> 
+  ggplot(aes(year,n,colour = verb_past_class_complex, group = verb_past_class_complex)) +
+  geom_point() +
+  # geom_line() +
+  geom_smooth() +
+  theme_bw() +
+  scale_colour_colorblind()
+
 # -- comp -- #
 
 predictors = c(
