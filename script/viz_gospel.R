@@ -18,8 +18,8 @@ plotCont = function(fit,pred_name){
     geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2, colour = NA) +
     labs(x = pred_name, y = "p", colour = "category", fill = "category") +
     theme_minimal() +
-    scale_colour_colorblind() +
-    scale_fill_colorblind()
+    scale_colour_colorblind(labels = c('(1) imperfective', '(2) past', '(3) past c.', '(4) present c.')) +
+    scale_fill_colorblind(labels = c('(1) imperfective', '(2) past', '(3) past c.', '(4) present c.'))
 }
 
 plotCat = function(fit, pred_name){
@@ -31,8 +31,8 @@ plotCat = function(fit, pred_name){
                   position = position_dodge(width = 0.3)) +
     labs(x = pred_name, y = "p", colour = "category", fill = "category") +
     theme_minimal() +
-    scale_colour_colorblind() +
-    scale_fill_colorblind() +
+    scale_colour_colorblind(labels = c('(1) imperfective', '(2) past', '(3) past c.', '(4) present c.')) +
+    scale_fill_colorblind(labels = c('(1) imperfective', '(2) past', '(3) past c.', '(4) present c.')) +
     guides(colour = 'none', fill = 'none')
 }
 
@@ -117,5 +117,5 @@ set2 = map(cat_pred,
 set3 = plotCat(fit1, "translation") +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 
-wrap_plots(c(set1,set3,set2), ncol = 3) + plot_layout(guides = 'collect')
-ggsave('viz/best_model_multi.png', width = 9, height = 6, dpi = 'print')
+wrap_plots(c(set1,set3,set2), ncol = 3, heights = c(2,1,1)) + plot_layout(guides = 'collect')
+ggsave('viz/best_model_multi.png', width = 9, height = 4, dpi = 'print')
