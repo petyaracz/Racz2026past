@@ -18,8 +18,8 @@ plotCont = function(fit,pred_name){
     geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2, colour = NA) +
     labs(x = pred_name, y = "p", colour = "category", fill = "category") +
     theme_minimal() +
-    scale_colour_colorblind(labels = c('(1) imperfective', '(2) past', '(3) past c.', '(4) present c.')) +
-    scale_fill_colorblind(labels = c('(1) imperfective', '(2) past', '(3) past c.', '(4) present c.'))
+    scale_colour_colorblind() +
+    scale_fill_colorblind()
 }
 
 plotCat = function(fit, pred_name){
@@ -31,15 +31,15 @@ plotCat = function(fit, pred_name){
                   position = position_dodge(width = 0.3)) +
     labs(x = pred_name, y = "p", colour = "category", fill = "category") +
     theme_minimal() +
-    scale_colour_colorblind(labels = c('(1) imperfective', '(2) past', '(3) past c.', '(4) present c.')) +
-    scale_fill_colorblind(labels = c('(1) imperfective', '(2) past', '(3) past c.', '(4) present c.')) +
+    scale_colour_colorblind() +
+    scale_fill_colorblind() +
     guides(colour = 'none', fill = 'none')
 }
 
 # -- read -- #
 
 d = read_tsv('dat/gospel_and_dict.tsv.gz')
-fit1 = readRDS('models/fit1.rds')
+fit3 = readRDS('models/fit3.rds')
 
 # -- set factors -- #
 
@@ -98,24 +98,46 @@ ggsave('viz/cors_multi.png', dpi = 'print', width = 10, height = 8)
 
 # -- summary -- #
 
-tidy(fit1, conf.int = T) |> 
+tidy(fit3, conf.int = T) |> 
   write_tsv('dat/best_model_coef_multi.tsv')
 
 # -- pred -- #
 
 cont_pred = c("log_lemma_freq_scaled", "lemma_length")
-cat_pred = c("number", "person", "prefix", "motion_verb", "communication_verb", "modal_verb")
+cat_pred = c("number", "person", "definite", "prefix", "motion_verb", "communication_verb", "modal_verb")
 
 set1 = map(cont_pred,
-            ~ plotCont(fit1, .)
+            ~ plotCont(fit3, .)
           )
 
 set2 = map(cat_pred,
-           ~ plotCat(fit1, .)
+           ~ plotCat(fit3, .)
           )
 
-set3 = plotCat(fit1, "translation") +
+set3 = plotCat(fit3, "translation") +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 
-wrap_plots(c(set1,set3,set2), ncol = 3, heights = c(2,1,1)) + plot_layout(guides = 'collect')
-ggsave('viz/best_model_multi.png', width = 9, height = 4, dpi = 'print')
+wrap_plots(c(set1,set3,set2), nrow = 4) + plot_layout(guides = 'collect', heights = c(2,1,1,1))
+ggsave('viz/best_model_multi.png', width = 10, height = 8, dpi = 'print')
+
+
+# -- ranef -- #
+
+ranef(fit3)
+# you could do something with this bud
+# Drager, Katie, and Jennifer Hay. "Exploiting random intercepts: Two case studies in sociophonetics." Language Variation and Change 24, no. 1 (2012): 59-78.
+tidy_re = tidy(fit3, effects = "ran_vals", robust = TRUE)
+
+tidy_re |> 
+  mutate(
+    outcome = str_remove(group, 'book:chapter__mu'),
+    book = str_extract(level, '^.*(?=_)'),
+    verse = str_extract(level, '(?<=_).*$') |> as.double()
+  ) |> 
+  ggplot(aes(verse, estimate, colour = outcome)) +
+  geom_line() +
+  facet_wrap(~ book, ncol = 1) +
+  theme_few() +
+  scale_colour_viridis_d()
+
+ggsave('viz/best_model_multi_ranef.png', width = 10, height = 8, dpi = 'print')

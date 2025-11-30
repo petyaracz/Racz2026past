@@ -176,6 +176,12 @@ d = d |>
       NA,
       number
     ),
+    definite = str_detect(tag, 'Def'),
+    definite = ifelse(
+      is.na(tag),
+      NA,
+      definite
+    ),
     prefix = str_detect(tag,'VPfx'),
     motion_verb = str_detect(lemma, '(jön|megy|indul)'),
     modal_verb = str_detect(lemma, '(^akar|tud|kell$)'),
@@ -186,7 +192,7 @@ d = d |>
 # -- dict -- #
 
 dict = d |> 
-  count(norm,lemma,verb_past_class,verb_present,tag,number,person,prefix,modal_verb,motion_verb,communication_verb, name = 'omagyar_freq')
+  count(norm,lemma,verb_past_class,verb_present,tag,number,person,definite,prefix,modal_verb,motion_verb,communication_verb, name = 'omagyar_freq')
 
 # -- write -- #
 

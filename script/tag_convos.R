@@ -64,10 +64,10 @@ d1 = l |>
 d2 = d1 |> 
   mutate(
     verb_past_class_complex = case_when(
-      !is.na(verb_past_class) & class_subtype == 'complex' ~ 'past_complex',
-      verb_present & class_subtype == 'complex' ~ 'perf_complex',
-      verb_past_class == 'Ipf' & class_subtype == 'other' ~ 'ipf',
-      verb_past_class == 'Past' & class_subtype == 'other' ~ 'past'
+      !is.na(verb_past_class) & class_subtype == 'complex' ~ 'complex imperfective',
+      verb_present & class_subtype == 'complex' ~ 'complex perfective',
+      verb_past_class == 'Ipf' & class_subtype == 'other' ~ 'imperfective',
+      verb_past_class == 'Past' & class_subtype == 'other' ~ 'perfective'
     )
   ) |> 
   filter(!is.na(verb_past_class_complex))
@@ -81,10 +81,10 @@ unique(d2[!d2$prefix,]$lemma)
 unique(d2[d2$motion_verb,]$lemma)
 unique(d2[d2$modal_verb,]$lemma)
 unique(d2[d2$communication_verb,]$lemma)
-unique(d2[d2$verb_past_class_complex == 'past_complex',]$word)
-unique(d2[d2$verb_past_class_complex == 'past',]$word)
-unique(d2[d2$verb_past_class_complex == 'perf_complex',]$word)
-unique(d2[d2$verb_past_class_complex == 'ipf',]$word)
+# unique(d2[d2$verb_past_class_complex == 'past_complex',]$word)
+# unique(d2[d2$verb_past_class_complex == 'past',]$word)
+# unique(d2[d2$verb_past_class_complex == 'perf_complex',]$word)
+# unique(d2[d2$verb_past_class_complex == 'ipf',]$word)
 
 # ohoho
 d2 = d2 |> filter(!word %in% c('érettünk'), !is.na(person), !is.na(number))

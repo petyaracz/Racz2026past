@@ -100,10 +100,10 @@ d3 = d2 |>
 d4 = d3 |> 
   mutate(
     verb_past_class_complex = case_when(
-      !is.na(verb_past_class) & class_subtype == 'complex' ~ 'past_complex',
-      verb_present & class_subtype == 'complex' ~ 'perf_complex',
-      verb_past_class == 'Ipf' & class_subtype == 'other' ~ 'ipf',
-      verb_past_class == 'Past' & class_subtype == 'other' ~ 'past'
+      !is.na(verb_past_class) & class_subtype == 'complex' ~ 'complex imperfective',
+      verb_present & class_subtype == 'complex' ~ 'complex perfective',
+      verb_past_class == 'Ipf' & class_subtype == 'other' ~ 'imperfective',
+      verb_past_class == 'Past' & class_subtype == 'other' ~ 'perfective'
     )
   ) |> 
   filter(!is.na(verb_past_class_complex))
