@@ -182,3 +182,13 @@ wrap_plots(plots, ncol = 1)
 
 ggsave('viz/best_model_multi_ranef.png', width = 8, height = 50, dpi = 'print', limitsize = F)
 # a normal person would probably use examples from this and not include the whole thing
+
+# -- normal person thing -- #
+
+tidy_re |> 
+  filter(outcome == 'imperfective') |> 
+  arrange(estimate) |> 
+  select(book,chapter,heading) |> View()
+
+# very imperfect ranef: matthew 1 (nemzé) and matthew 4 (temptation in the desert)
+# very not imperfect ranef: most are chapters with lotsa present in them, but see luke 12 (parable)
