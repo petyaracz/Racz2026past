@@ -40,6 +40,7 @@ plotCat = function(fit, pred_name){
 
 d = read_tsv('dat/gospel_and_dict.tsv.gz')
 fit3 = readRDS('models/fit3.rds')
+h = read_csv('dat/niv_gospel_headings.csv')
 
 # -- set factors -- #
 
@@ -125,22 +126,59 @@ ggsave('viz/best_model_multi.png', width = 10, height = 8, dpi = 'print')
 # ranef(fit3)
 # you could do something with this bud
 # Drager, Katie, and Jennifer Hay. "Exploiting random intercepts: Two case studies in sociophonetics." Language Variation and Change 24, no. 1 (2012): 59-78.
+
 tidy_re = tidy(fit3, effects = "ran_vals", robust = TRUE)
 
-tidy_re |> 
+tidy_re = tidy_re |> 
   mutate(
     outcome = str_remove(group, 'book:chapter__mu'),
     book = str_extract(level, '^.*(?=_)'),
-    verse = str_extract(level, '(?<=_).*$') |> as.double()
-  ) |> 
-  ggplot(aes(verse, estimate)) +
-  # geom_point() +
-  geom_line() +
-  geom_hline(yintercept = 0, lty = 3) +
-  facet_wrap(~ outcome + book, ncol = 4) +
-  theme_bw() +
-  # scale_colour_viridis_d() +
-  coord_flip() +
-  scale_x_reverse()
+    chapter = str_extract(level, '(?<=_).*$') |> as.double()
+  )
 
-ggsave('viz/best_model_multi_ranef.png', width = 10, height = 8, dpi = 'print')
+tidy_re = h |> 
+  mutate(
+    book2 = case_when(
+      book == 'Matthew' ~ 'Mt',
+      book == 'Mark' ~ 'Mk',
+      book == 'Luke' ~ 'Lk',
+      book == 'John' ~ 'Jn'
+    ),
+    heading = str_remove_all(heading, '\\([^\\(]*\\)'),
+    book = book2
+  ) |> 
+  summarise(
+    heading = paste(heading, collapse = '; '),
+    .by = c(book,chapter)
+  ) |> 
+  right_join(tidy_re)
+
+bookRanPlot = function(dat,book){
+  dat = mutate(dat, heading2 = fct_reorder(heading,chapter)) 
+    
+  ggplot(dat, aes(chapter, estimate)) +
+    geom_line() +
+    geom_hline(yintercept = 0, lty = 3) +
+    facet_wrap(~ outcome, ncol = 3) +
+    theme_bw() +
+    coord_flip() +
+    scale_x_reverse() +
+    scale_x_continuous(
+      breaks = dat$chapter,
+      labels = str_wrap(dat$heading2, width = 75),
+      name = ''
+    ) +
+    ggtitle(book)
+}
+
+plots = tidy_re |> 
+  nest(.by = book) |> 
+  mutate(
+    plot = map2(data,book, ~bookRanPlot(.x,.y))
+  ) |> 
+  pull(plot)
+
+wrap_plots(plots, ncol = 1)
+
+ggsave('viz/best_model_multi_ranef.png', width = 8, height = 50, dpi = 'print', limitsize = F)
+# a normal person would probably use examples from this and not include the whole thing
