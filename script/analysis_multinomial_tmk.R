@@ -9,7 +9,7 @@ library(broom.mixed)
 # -- read -- #
 
 d = read_tsv('dat/tmk_and_dict.tsv.gz')
-fit1b = readRDS('models/fit1b.rds')
+fit3 = readRDS('models/fit3.rds')
 
 # -- set factors -- #
 
@@ -19,6 +19,8 @@ d2 = d |>
     lemma_length = scales::rescale(nchar(lemma)),
     number = fct_relevel(number, 'S'),
     person = fct_relevel(as.factor(person), '3','2','1'),
+    definite = ifelse(definite, 'definite', 'indefinite') |> 
+      fct_relevel('indefinite'),
     prefix = ifelse(prefix, 'prefixed verb', 'other verb') |> 
       fct_relevel('other verb'),
     modal_verb = ifelse(modal_verb, 'modal verb', 'other verb') |> 
@@ -26,19 +28,20 @@ d2 = d |>
     communication_verb = ifelse(communication_verb, 'communicative verb', 'other verb') |> 
       fct_relevel('other verb'),
     motion_verb = ifelse(motion_verb, 'motion verb', 'other verb') |> 
-      fct_relevel('other verb')
+      fct_relevel('other verb'),
+    translation = 'Karoli'
   )
 
 # -- predict -- #
 
-preds = predict(fit1b, d2)
+preds = predict(fit3, d2, re_formula = NA)
 
 preds2 = as_tibble(preds) |> 
   rename(
-    pred_ipf = `P(Y = ipf)`,
-    pred_past = `P(Y = past)`,
-    pred_past_complex = `P(Y = past_complex)`,
-    pred_perf_complex = `P(Y = perf_complex)`
+    pred_complex_imperfective = `P(Y = complex imperfective)`,
+    pred_complex_perfective = `P(Y = complex perfective)`,
+    pred_imperfective = `P(Y = imperfective)`,
+    pred_perfective = `P(Y = perfective)`
   )
 
 # -- write -- #

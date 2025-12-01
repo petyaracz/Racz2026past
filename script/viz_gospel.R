@@ -120,10 +120,9 @@ set3 = plotCat(fit3, "translation") +
 wrap_plots(c(set1,set3,set2), nrow = 4) + plot_layout(guides = 'collect', heights = c(2,1,1,1))
 ggsave('viz/best_model_multi.png', width = 10, height = 8, dpi = 'print')
 
-
 # -- ranef -- #
 
-ranef(fit3)
+# ranef(fit3)
 # you could do something with this bud
 # Drager, Katie, and Jennifer Hay. "Exploiting random intercepts: Two case studies in sociophonetics." Language Variation and Change 24, no. 1 (2012): 59-78.
 tidy_re = tidy(fit3, effects = "ran_vals", robust = TRUE)
@@ -134,10 +133,14 @@ tidy_re |>
     book = str_extract(level, '^.*(?=_)'),
     verse = str_extract(level, '(?<=_).*$') |> as.double()
   ) |> 
-  ggplot(aes(verse, estimate, colour = outcome)) +
+  ggplot(aes(verse, estimate)) +
+  # geom_point() +
   geom_line() +
-  facet_wrap(~ book, ncol = 1) +
-  theme_few() +
-  scale_colour_viridis_d()
+  geom_hline(yintercept = 0, lty = 3) +
+  facet_wrap(~ outcome + book, ncol = 4) +
+  theme_bw() +
+  # scale_colour_viridis_d() +
+  coord_flip() +
+  scale_x_reverse()
 
 ggsave('viz/best_model_multi_ranef.png', width = 10, height = 8, dpi = 'print')
